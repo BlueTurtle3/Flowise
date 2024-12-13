@@ -1,8 +1,8 @@
-import { INode, INodeData } from '../../../src/Interface'
+import { INode, INodeData, INodeParams, INodeOutputsValue, ICommonObject } from '../../../src/Interface'
 import { getBaseClasses } from '../../../src/utils'
 import { CustomCohereRerankTool } from './CustomCohereRerankTool'
 
-export class CustomCohereRerankNode implements INode {
+class CustomCohereRerankNode implements INode {
     // Node metadata
     name: string = 'CustomCohereRerankNode';
     description: string = 'A custom node for Cohere Rerank Tool';
@@ -13,24 +13,47 @@ export class CustomCohereRerankNode implements INode {
     icon: string
     author: string
     baseClasses: string[]
+    inputs: INodeParams[]
+    output: INodeOutputsValue[]
+    
 
     constructor() {
         this.label = 'CustomCohereRerankNode'
         this.name = 'CustomCohereRerankNode'
         this.version = 1.0
         this.type = 'CustomCohereRerankNode'
-        this.icon = 'customCohereRerankNode.png'
+        this.icon = 'customCohereRerankTool.svg'
         this.category = 'Tools'
         this.author = 'Eyal Zisman'
         this.description = 'A tool for reranking embeddings using the cohere rerank retriever'
         this.baseClasses = [this.type, ...getBaseClasses(CustomCohereRerankTool)]
+        this.inputs = [
+            {
+                label: 'Documents',
+                name: 'rerankedDocuments',
+                type: 'Document',
+                description: 'An array of Documents or JSON objects to be reranked, typically from the CohereRerank retriever.',
+            }
+        ]
+    
+       this.output = [
+            {
+                label: 'Reranked Documents',
+                name: 'documents',
+                baseClasses: [...this.baseClasses, 'json'],
+                description: 'The reranked documents ready to be passed to worker tools.',
+            },
+        ]
     }
 
+    public async init(nodeData: INodeData, input: string, options?: ICommonObject): Promise<void> {
+        // Initialize parameters or settings here
+    }
     
     // The `run` method defines the behavior of the node
-    public async run(nodeData: INodeData): Promise<any> {
+    public async run(nodeData: INodeData, input: string, options?: ICommonObject): Promise<any> {
         // Extract documents from input
-        const documents = nodeData.inputs?.documents || [];
+        const documents = nodeData.inputs?.rerankedDocuments || [];
 
         // Initialize the tool
         const tool = new CustomCohereRerankTool();
@@ -44,3 +67,5 @@ export class CustomCohereRerankNode implements INode {
         };
     }
 }
+
+module.exports = { nodeClass: CustomCohereRerankNode }

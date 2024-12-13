@@ -1,14 +1,23 @@
-export class CustomCohereRerankTool {
+import { CallbackManagerForToolRun } from '@langchain/core/callbacks/manager';
+import { RunnableConfig } from '@langchain/core/runnables';
+import { Tool } from '@langchain/core/tools'
+export class CustomCohereRerankTool extends Tool {
     name: string;
     description: string;
     category: string;
     type: "Tool"
 
     constructor() {
+        super();
         this.name = "CohereProcessedTool";
         this.description = "A custom tool to process documents from Cohere Rerank Retriever";
         this.category = "Tools";
         this.type = "Tool";
+    
+    }
+
+    protected _call(arg: any, runManager?: CallbackManagerForToolRun, parentConfig?: RunnableConfig): Promise<any> {
+        throw new Error('Method not implemented.');
     }
 
     // The main function that defines the tool's behavior
