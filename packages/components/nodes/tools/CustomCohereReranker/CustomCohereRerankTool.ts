@@ -2,7 +2,7 @@ export class CustomCohereRerankTool {
     name: string;
     description: string;
     category: string;
-    type: string;
+    type: "Tool"
 
     constructor() {
         this.name = "CohereProcessedTool";
