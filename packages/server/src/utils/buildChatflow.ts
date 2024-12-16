@@ -57,6 +57,7 @@ import { getErrorMessage } from '../errors/utils'
 import { ChatMessage } from '../database/entities/ChatMessage'
 import { IAction } from 'flowise-components'
 import { FLOWISE_METRIC_COUNTERS, FLOWISE_COUNTER_STATUS } from '../Interface.Metrics'
+import { Variable } from '../database/entities/Variable'
 
 /**
  * Build Chatflow
@@ -218,7 +219,7 @@ export const utilBuildChatflow = async (req: Request, isInternal: boolean = fals
 
         /*** Get session ID ***/
         const memoryNode = findMemoryNode(nodes, edges)
-        const memoryType = memoryNode?.data.label
+        const memoryType = memoryNode?.data?.label
         let sessionId = getMemorySessionId(memoryNode, incomingInput, chatId, isInternal)
 
         /*** Get Ending Node with Directed Graph  ***/
@@ -350,6 +351,7 @@ export const utilBuildChatflow = async (req: Request, isInternal: boolean = fals
             const startingNodes = nodes.filter((nd) => startingNodeIds.includes(nd.id))
 
             /*** Get API Config ***/
+            const availableVariables = await appServer.AppDataSource.getRepository(Variable).find()
             const { nodeOverrides, variableOverrides, apiOverrideStatus } = getAPIOverrideConfig(chatflow)
 
             logger.debug(`[server]: Start building chatflow ${chatflowid}`)
@@ -373,6 +375,7 @@ export const utilBuildChatflow = async (req: Request, isInternal: boolean = fals
                 overrideConfig: incomingInput?.overrideConfig,
                 apiOverrideStatus,
                 nodeOverrides,
+                availableVariables,
                 variableOverrides,
                 cachePool: appServer.cachePool,
                 isUpsert: false,
@@ -427,6 +430,7 @@ export const utilBuildChatflow = async (req: Request, isInternal: boolean = fals
                 chatHistory,
                 flowData,
                 uploadedFilesContent,
+                availableVariables,
                 variableOverrides
             )
             nodeToExecuteData = reactFlowNodeData
