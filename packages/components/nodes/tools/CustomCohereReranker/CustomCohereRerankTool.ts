@@ -17,23 +17,25 @@ export class CustomCohereRerankTool extends Tool {
     }
 
     protected _call(arg: any, runManager?: CallbackManagerForToolRun, parentConfig?: RunnableConfig): Promise<any> {
-        throw new Error('Method not implemented.');
+        return this.run(arg);
     }
 
     // The main function that defines the tool's behavior
     async run(input: { documents: { content: string; metadata: object; score: number }[] }) {
         // Extract documents from input
         const documents = input.documents || [];
+        console.log("***Test documents to the tool:", documents);
 
         // Transform the documents into a simplified format
         const processedDocuments = documents.map(doc => ({
             content: doc.content || "",
-            metadata: doc.metadata || {},
+            metadata: doc.metadata || {}, 
             score: doc.score || 0
         }));
-
+        console.log("***Test Processed documents to the tool:", processedDocuments);
         // Return the processed documents in the expected format
         return {
+            
             processed_documents: processedDocuments
         };
     }

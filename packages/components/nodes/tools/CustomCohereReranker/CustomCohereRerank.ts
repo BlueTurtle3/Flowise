@@ -33,6 +33,12 @@ class CustomCohereRerankNode implements INode {
                 name: 'rerankedDocuments',
                 type: 'Document',
                 description: 'An array of Documents or JSON objects to be reranked, typically from the CohereRerank retriever.',
+            },
+            {
+                label: 'Retriever Name',
+                name: 'name',
+                type: 'string',
+                placeholder: 'custom cohere retriever connector name'
             }
         ]
     
@@ -46,15 +52,11 @@ class CustomCohereRerankNode implements INode {
         ]
     }
 
-    public async init(nodeData: INodeData, input: string, options?: ICommonObject): Promise<void> {
+    public async init(nodeData: INodeData, input: string, options?: ICommonObject): Promise<any> {
         // Initialize parameters or settings here
-    }
-    
-    // The `run` method defines the behavior of the node
-    public async run(nodeData: INodeData, input: string, options?: ICommonObject): Promise<any> {
-        // Extract documents from input
         const documents = nodeData.inputs?.rerankedDocuments || [];
 
+        console.log("***Test documents =", JSON.stringify(documents));
         // Initialize the tool
         const tool = new CustomCohereRerankTool();
 
@@ -63,7 +65,25 @@ class CustomCohereRerankNode implements INode {
 
         // Return the processed documents
         return {
-            processed_documents: result.processed_documents
+            processed_documents: tool
+        };
+    }
+    
+    // The `run` method defines the behavior of the node
+    public async run(nodeData: INodeData, input: string, options?: ICommonObject): Promise<any> {
+        // Extract documents from input
+        const documents = nodeData.inputs?.rerankedDocuments || [];
+
+        console.log("***Test documents =", JSON.stringify(documents));
+        // Initialize the tool
+        const tool = new CustomCohereRerankTool();
+
+        // Process the documents using the tool
+        const result = await tool.run({ documents });
+
+        // Return the processed documents
+        return {
+            processed_documents: tool
         };
     }
 }
